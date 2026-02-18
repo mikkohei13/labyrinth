@@ -4,14 +4,24 @@ Escape the Labyrinth is a game where you navigate a maze to escape from monsters
 
 Play at https://www.biomi.org/games/labyrinth/
 
-# How to win
+## How to win
 - Escape the maze through the green exit without being caught by the monsters.
 
-# How to play
+## How to play
 - Use the arrow keys to navigate the maze.
 - Collect useful items to help you escape.
 - After enjoying the escape, press esc or click mouse to return to the menu.
 
-# How to lose
+## How to lose
 - Be caught by the monsters.
 
+## How it was made
+- One excited kid, one evening, and a whole lot of vibe coding. No grand plan — just "what if we add monsters?" and "ooh, make them faster!" until bedtime came way too soon.
+
+## How to run locally
+
+```bash
+python3 -m http.server 8000
+```
+
+Then open http://localhost:8000/ in your browser.

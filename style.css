@@ -172,3 +172,10 @@ canvas {
   opacity: 1;
 }
 
+.github-link a {
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 14px;
+  color: #e94560;
+  margin-top: 32px;
+  text-align: center;
+}
