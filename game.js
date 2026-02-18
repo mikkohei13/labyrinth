@@ -89,6 +89,8 @@ function returnToMenu() {
   overlayCtx.clearRect(0, 0, overlay.width, overlay.height);
   winText.classList.remove('visible');
   caughtText.classList.remove('visible');
+  finalScore.classList.remove('visible');
+  scoreDisplay.classList.remove('visible');
   menu.classList.remove('hidden');
   if (lastGameWasRandom) {
     syncStateFromMenu();
@@ -101,6 +103,8 @@ function showWin() {
   stopMonsters();
   draw();
   winText.classList.add('visible');
+  finalScore.textContent = `Score: ${scorePercent()}%`;
+  finalScore.classList.add('visible');
   confettiRunning = true;
   spawnConfetti();
   animateConfetti();
@@ -294,8 +298,9 @@ function startGame() {
   ROWS = maze.length;
   COLS = maze[0].length;
 
+  const scoreBarHeight = 50;
   const maxW = window.innerWidth - 40;
-  const maxH = window.innerHeight - 40;
+  const maxH = window.innerHeight - 40 - scoreBarHeight;
   TILE = Math.max(10, Math.floor(Math.min(maxW / COLS, maxH / ROWS)));
 
   canvas.width = COLS * TILE;
@@ -304,17 +309,27 @@ function startGame() {
   player.y = 1;
   lightRadius = visMap[settings.visibility];
   baseLightRadius = lightRadius;
-  flashlightsCollected = 0;
-  flashlights = placeFlashlights();
+  sunsCollected = 0;
+  suns = placeSuns();
   crystal = placeCrystal();
+  crescentItem = placeCrescent();
+  score = 0;
+  placeDots();
+  let dotCount = 0;
+  for (let r = 0; r < ROWS; r++)
+    for (let c = 0; c < COLS; c++)
+      if (dots[r][c]) dotCount++;
+  maxScore = dotCount + suns.length * 5 + (crystal ? 20 : 0) + (crescentItem ? 5 : 0);
+  scoreDisplay.textContent = '0.0%';
   monsters = placeMonsters();
   gameOver = false;
   menu.classList.add('hidden');
+  scoreDisplay.classList.add('visible');
   draw();
   startMonsters();
 }
 
-function placeFlashlights() {
+function placeSuns() {
   if (!maze) return [];
   const countMap = { small: 1, medium: 2, large: 3 };
   const count = countMap[settings.size] || 1;
@@ -328,13 +343,47 @@ function placeFlashlights() {
   return floors.slice(0, count);
 }
 
-let flashlights = [];
+let suns = [];
 let baseLightRadius = 3;
-let flashlightsCollected = 0;
+let sunsCollected = 0;
 
 let crystal = null;
+let crescentItem = null;
 let exitFlashTimer = 0;
 let exitFlashRAF = null;
+
+let score = 0;
+let maxScore = 0;
+let dots = null;
+const scoreDisplay = document.getElementById('score-display');
+const finalScore = document.getElementById('final-score');
+
+function scorePercent() {
+  if (maxScore === 0) return '0.0';
+  return (score / maxScore * 100).toFixed(1);
+}
+
+function updateScore(pts) {
+  score += pts;
+  scoreDisplay.textContent = scorePercent() + '%';
+}
+
+function placeDots() {
+  dots = Array.from({ length: ROWS }, () => Array(COLS).fill(false));
+  const occupied = new Set();
+  occupied.add('1,1');
+  for (const sun of suns) occupied.add(`${sun.x},${sun.y}`);
+  if (crystal) occupied.add(`${crystal.x},${crystal.y}`);
+  if (crescentItem) occupied.add(`${crescentItem.x},${crescentItem.y}`);
+
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (maze[r][c] !== 1 && !occupied.has(`${c},${r}`)) {
+        dots[r][c] = true;
+      }
+    }
+  }
+}
 
 function placeCrystal() {
   if (!maze) return null;
@@ -342,6 +391,25 @@ function placeCrystal() {
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
       if (maze[r][c] === 0 && !(r === 1 && c === 1) &&
+          Math.abs(r - 1) + Math.abs(c - 1) > 4) {
+        floors.push({ x: c, y: r });
+      }
+    }
+  }
+  if (floors.length === 0) return null;
+  return floors[Math.floor(Math.random() * floors.length)];
+}
+
+function placeCrescent() {
+  if (!maze) return null;
+  const occupied = new Set();
+  occupied.add('1,1');
+  for (const sun of suns) occupied.add(`${sun.x},${sun.y}`);
+  if (crystal) occupied.add(`${crystal.x},${crystal.y}`);
+  const floors = [];
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (maze[r][c] === 0 && !occupied.has(`${c},${r}`) &&
           Math.abs(r - 1) + Math.abs(c - 1) > 4) {
         floors.push({ x: c, y: r });
       }
@@ -417,7 +485,9 @@ function placeMonsters() {
     let idx;
     do { idx = Math.floor(Math.random() * pool.length); } while (used.has(idx) && used.size < pool.length);
     used.add(idx);
-    result.push({ x: pool[idx].x, y: pool[idx].y, dx: 0, dy: 0 });
+    const hue = Math.floor(Math.random() * 360);
+    const color = `hsl(${hue}, 100%, 50%)`;
+    result.push({ x: pool[idx].x, y: pool[idx].y, dx: 0, dy: 0, color });
   }
   return result;
 }
@@ -506,6 +576,8 @@ function showCaught() {
   stopMonsters();
   draw();
   caughtText.classList.add('visible');
+  finalScore.textContent = `Score: ${scorePercent()}%`;
+  finalScore.classList.add('visible');
   waitingForDismiss = true;
 }
 
@@ -525,9 +597,22 @@ function draw() {
     }
   }
 
-  for (const fl of flashlights) {
-    const fx = fl.x * TILE + TILE / 2;
-    const fy = fl.y * TILE + TILE / 2;
+  if (dots) {
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+    const dotR = Math.max(2, TILE * 0.08);
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        if (!dots[r][c]) continue;
+        ctx.beginPath();
+        ctx.arc(c * TILE + TILE / 2, r * TILE + TILE / 2, dotR, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  }
+
+  for (const sun of suns) {
+    const fx = sun.x * TILE + TILE / 2;
+    const fy = sun.y * TILE + TILE / 2;
     ctx.save();
     ctx.translate(fx, fy);
     const r = 8;
@@ -575,6 +660,27 @@ function draw() {
     ctx.fill();
   }
 
+  // crescent (full moon icon)
+  if (crescentItem) {
+    const cx = crescentItem.x * TILE + TILE / 2;
+    const cy = crescentItem.y * TILE + TILE / 2;
+    const cr = TILE * 0.3;
+    ctx.fillStyle = '#c0bfb8';
+    ctx.beginPath();
+    ctx.arc(cx, cy, cr, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#a8a79f';
+    ctx.beginPath();
+    ctx.arc(cx - cr * 0.3, cy - cr * 0.25, cr * 0.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(cx + cr * 0.35, cy + cr * 0.2, cr * 0.15, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(cx - cr * 0.1, cy + cr * 0.4, cr * 0.12, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
   // player
   characters[selectedCharacter].draw(
     ctx,
@@ -587,7 +693,7 @@ function draw() {
   for (const m of monsters) {
     const mx = m.x * TILE + TILE / 2;
     const my = m.y * TILE + TILE / 2;
-    ctx.fillStyle = MONSTER_COLOR;
+    ctx.fillStyle = m.color || MONSTER_COLOR;
     ctx.beginPath();
     ctx.arc(mx, my - 2, TILE * 0.35, Math.PI, 0);
     ctx.lineTo(mx + TILE * 0.35, my + TILE * 0.3);
@@ -611,7 +717,7 @@ function draw() {
     ctx.fill();
   }
 
-  // flashlight darkness
+  // darkness
   if (!gameOver) {
     const px = player.x * TILE + TILE / 2;
     const py = player.y * TILE + TILE / 2;
@@ -653,16 +759,32 @@ function tryMove(dx, dy) {
   player.x = nx;
   player.y = ny;
 
-  const pickedIdx = flashlights.findIndex(f => nx === f.x && ny === f.y);
+  if (dots && dots[ny][nx]) {
+    dots[ny][nx] = false;
+    updateScore(1);
+  }
+
+  const pickedIdx = suns.findIndex(f => nx === f.x && ny === f.y);
   if (pickedIdx !== -1) {
-    flashlights.splice(pickedIdx, 1);
-    flashlightsCollected++;
-    lightRadius = Math.ceil(baseLightRadius * (1 + 0.5 * flashlightsCollected));
+    suns.splice(pickedIdx, 1);
+    sunsCollected++;
+    lightRadius = Math.ceil(baseLightRadius * (1 + 0.5 * sunsCollected));
+    updateScore(5);
   }
 
   if (crystal && nx === crystal.x && ny === crystal.y) {
     crystal = null;
     flashExit();
+    updateScore(20);
+  }
+
+  if (crescentItem && nx === crescentItem.x && ny === crescentItem.y) {
+    crescentItem = null;
+    if (sunsCollected > 0) {
+      sunsCollected--;
+      lightRadius = Math.ceil(baseLightRadius * (1 + 0.5 * sunsCollected));
+    }
+    updateScore(5);
   }
 
   if (monsters.some(m => nx === m.x && ny === m.y)) {
@@ -681,7 +803,7 @@ function tryMove(dx, dy) {
 }
 
 window.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && waitingForDismiss) {
+  if ((e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') && waitingForDismiss) {
     returnToMenu();
     return;
   }

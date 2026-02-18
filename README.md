@@ -9,7 +9,8 @@ Play at https://www.biomi.org/games/labyrinth/
 
 ## How to play
 - Use the arrow keys to navigate the maze.
-- Collect useful items to help you escape.
+- Collect useful items to help you escape. 
+- Get points by collecting items.
 - After enjoying the escape, press esc or click mouse to return to the menu.
 
 ## How to lose

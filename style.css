@@ -7,9 +7,48 @@ body {
   height: 100vh;
   overflow: hidden;
 }
+#game-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 canvas {
   border: 2px solid #e94560;
   border-radius: 4px;
+}
+#score-display {
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: #f5c542;
+  text-shadow: 0 0 10px rgba(245, 197, 66, 0.5);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  padding: 6px 0;
+  line-height: 1;
+}
+#score-display.visible {
+  opacity: 1;
+}
+#final-score {
+  position: fixed;
+  top: calc(50% + 48px);
+  left: 50%;
+  transform: translate(-50%, 0) scale(0);
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+  color: #f5c542;
+  text-shadow: 0 0 15px rgba(245, 197, 66, 0.6);
+  z-index: 20;
+  pointer-events: none;
+  opacity: 0;
+  transition: transform 0.5s cubic-bezier(.17,.67,.24,1.4), opacity 0.4s ease;
+}
+#final-score.visible {
+  transform: translate(-50%, 0) scale(1);
+  opacity: 1;
 }
 #overlay {
   position: fixed;
