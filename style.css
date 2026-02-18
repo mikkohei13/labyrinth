@@ -1,0 +1,174 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #1a1a2e;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+canvas {
+  border: 2px solid #e94560;
+  border-radius: 4px;
+}
+#overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+#win-text {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 72px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 0 20px #e94560, 0 0 60px #e94560, 0 0 100px #53d769;
+  z-index: 20;
+  pointer-events: none;
+  opacity: 0;
+  transition: transform 0.5s cubic-bezier(.17,.67,.24,1.4), opacity 0.4s ease;
+}
+#win-text.visible {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+#menu {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 26, 46, 0.95);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 30;
+  gap: 10px;
+}
+#menu.hidden { display: none; }
+#menu h1 {
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 48px;
+  font-weight: 900;
+  color: #e94560;
+  margin-bottom: 12px;
+  text-shadow: 0 0 30px rgba(233, 69, 96, 0.5);
+}
+#menu h2 {
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 14px;
+  color: #e94560;
+  font-weight: normal;
+  margin-top: 32px;
+  text-align: center;
+}
+.start-btn {
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  padding: 14px 48px;
+  border: 2px solid #53d769;
+  border-radius: 8px;
+  cursor: pointer;
+  background: transparent;
+  color: #53d769;
+  transition: background 0.2s, transform 0.15s;
+  width: 260px;
+  margin-top: 8px;
+}
+.start-btn:hover { background: rgba(83, 215, 105, 0.15); transform: scale(1.05); }
+.random-btn { border-color: #f5c542; color: #f5c542; }
+.random-btn:hover { background: rgba(245, 197, 66, 0.15); }
+.music-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #888;
+  padding: 6px 18px;
+  border: 2px solid #555;
+  border-radius: 6px;
+  transition: color 0.2s, border-color 0.2s;
+  user-select: none;
+  margin-bottom: 4px;
+}
+.music-toggle:hover { border-color: #aaa; color: #aaa; }
+.music-toggle.on { border-color: #f5c542; color: #f5c542; }
+.music-icon { font-size: 18px; }
+.setting-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.setting-group label {
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 14px;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+.setting-buttons {
+  display: flex;
+  gap: 6px;
+}
+.opt-btn {
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 7px 18px;
+  border: 2px solid #ce93d8;
+  border-radius: 6px;
+  cursor: pointer;
+  background: transparent;
+  color: #ce93d8;
+  transition: background 0.2s, transform 0.15s;
+}
+.opt-btn:hover { background: rgba(206, 147, 216, 0.15); transform: scale(1.05); }
+.opt-btn.selected { background: rgba(206, 147, 216, 0.3); color: #fff; border-color: #fff; }
+.char-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border: 2px solid #555;
+  border-radius: 8px;
+  cursor: pointer;
+  background: transparent;
+  transition: border-color 0.2s, transform 0.15s;
+}
+.char-btn:hover { border-color: #e94560; transform: scale(1.08); }
+.char-btn.selected { border-color: #e94560; background: rgba(233, 69, 96, 0.15); }
+.char-btn canvas { border-radius: 4px; display: block; }
+.char-btn span {
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 11px;
+  color: #aaa;
+  font-weight: 600;
+}
+#caught-text {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 64px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 0 20px #ce93d8, 0 0 60px #ce93d8;
+  z-index: 20;
+  pointer-events: none;
+  opacity: 0;
+  transition: transform 0.5s cubic-bezier(.17,.67,.24,1.4), opacity 0.4s ease;
+}
+#caught-text.visible {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+

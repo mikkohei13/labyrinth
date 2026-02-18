@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Labyrinth</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="menu">
+  <h1>Escape the Labyrinth</h1>
+  <div id="music-toggle" class="music-toggle" onclick="toggleMusic()">
+    <span class="music-icon" id="music-icon">&#9835;</span>
+    <span id="music-label">Music: Off</span>
+  </div>
+  <div class="setting-group">
+    <label>Size</label>
+    <div class="setting-buttons">
+      <button class="opt-btn selected" onclick="setSetting('size','small',this)">Small</button>
+      <button class="opt-btn" onclick="setSetting('size','medium',this)">Medium</button>
+      <button class="opt-btn" onclick="setSetting('size','large',this)">Large</button>
+    </div>
+  </div>
+  <div class="setting-group">
+    <label>Extra Paths</label>
+    <div class="setting-buttons">
+      <button class="opt-btn" onclick="setSetting('loops','few',this)">Few</button>
+      <button class="opt-btn selected" onclick="setSetting('loops','some',this)">Some</button>
+      <button class="opt-btn" onclick="setSetting('loops','lots',this)">Lots</button>
+    </div>
+  </div>
+  <div class="setting-group">
+    <label>Visibility</label>
+    <div class="setting-buttons">
+      <button class="opt-btn" onclick="setSetting('visibility','bright',this)">Bright</button>
+      <button class="opt-btn selected" onclick="setSetting('visibility','normal',this)">Normal</button>
+      <button class="opt-btn" onclick="setSetting('visibility','dark',this)">Dark</button>
+    </div>
+  </div>
+  <div class="setting-group">
+    <label>Monster Speed</label>
+    <div class="setting-buttons">
+      <button class="opt-btn" onclick="setSpeed(600, this)">Slow</button>
+      <button class="opt-btn selected" onclick="setSpeed(400, this)">Normal</button>
+      <button class="opt-btn" onclick="setSpeed(200, this)">Fast</button>
+    </div>
+  </div>
+  <div class="setting-group">
+    <label>Monsters</label>
+    <div class="setting-buttons">
+      <button class="opt-btn selected" onclick="setMonsterCount(1, this)">1</button>
+      <button class="opt-btn" onclick="setMonsterCount(2, this)">2</button>
+      <button class="opt-btn" onclick="setMonsterCount(3, this)">3</button>
+      <button class="opt-btn" onclick="setMonsterCount(4, this)">4</button>
+      <button class="opt-btn" onclick="setMonsterCount(5, this)">5</button>
+    </div>
+  </div>
+  <div class="setting-group">
+    <label>Character</label>
+    <div id="char-select" class="setting-buttons"></div>
+  </div>
+  <button class="start-btn" onclick="startGame()">Start Game</button>
+  <button class="start-btn random-btn" onclick="randomGame()">Random Game</button>
+
+  <h2>by Verna & Mikko, version 2026-02-18</h2>
+</div>
+<div id="caught-text">👻 Caught 👻</div>
+<canvas id="game"></canvas>
+<canvas id="overlay"></canvas>
+<div id="win-text">🎉 Escape! 🎉</div>
+<script src="characters.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
