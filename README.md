@@ -25,4 +25,10 @@ Play at https://www.biomi.org/games/labyrinth/
 python3 -m http.server 8000
 ```
 
+# How to develop
+
+- Sun should be scaled to cell size
+- Monsters are too fast, especially on fast mode
+- Pause and quit?
+
 Then open http://localhost:8000/ in your browser.
